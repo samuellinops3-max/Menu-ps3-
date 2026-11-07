@@ -1,0 +1,53 @@
+name: Criar Instalador PKG do PS3
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Baixar arquivos do repositorio
+      uses: actions/checkout@v4
+
+    - name: Baixar o compilador de PKG atualizado
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget python3
+        wget https://githubusercontent.com
+        chmod +x make_package_npdrm.py
+
+    - name: Criar configuracao do instalador e arquivo do menu
+      run: |
+        echo "Content-ID = UP0001-MEUMENU01_00-0000111122223333" > package.conf
+        echo "PackageType = Homebrew" >> package.conf
+        
+        mkdir -p input/C00/USRDIR
+        cat << 'EOF' > input/C00/USRDIR/category_container.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <XMBLayout version="1.0">
+          <Item class="type:x-xmb/folder-items" name="central_temas" title="Central de Temas" icon="tex: those_icons">
+            <Item class="type:x-xmb/folder-items" name="sub_temas" title="Baixar Temas Completos (.p3t)">
+              <Item class="type:x-xmb/action" name="tema_1" title="Baixar Tema: Retro Gaming" module="webbrowser" action="http://ps3-themes.com"/>
+            </Item>
+            <Item class="type:x-xmb/folder-items" name="sub_wallpapers" title="Baixar Papéis de Parede (1080p)">
+              <Item class="type:x-xmb/action" name="wall_1" title="Baixar Wallpaper: PlayStation Classic" module="webbrowser" action="https://hdqwalls.com"/>
+            </Item>
+          </Item>
+        </XMBLayout>
+        EOF
+
+    - name: Compilar tudo em um arquivo PKG
+      run: |
+        python3 make_package_npdrm.py package.conf input
+        mv *.pkg MeuMenuPersonalizado.pkg
+
+    - name: Enviar o PKG pronto para download
+      uses: actions/upload-artifact@v4
+      with:
+        name: Instalador-PKG-PS3
+        path: MeuMenuPersonalizado.pkg
+        
