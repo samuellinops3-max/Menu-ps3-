@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XMBLayout version="1.0">
+  <Item class="type:x-xmb/folder-items" name="central_temas" title="Central de Temas" icon="tex: those_icons">
+    <Item class="type:x-xmb/folder-items" name="sub_temas" title="Baixar Temas Completos (.p3t)">
+      <Item class="type:x-xmb/action" name="tema_1" title="Baixar Tema: Retro Gaming" module="webbrowser" action="http://ps3-themes.com"/>
+    </Item>
+    <Item class="type:x-xmb/folder-items" name="sub_wallpapers" title="Baixar Papéis de Parede (1080p)">
+      <Item class="type:x-xmb/action" name="wall_1" title="Baixar Wallpaper: PlayStation Classic" module="webbrowser" action="https://hdqwalls.com"/>
+    </Item>
+  </Item>
+</XMBLayout>
+      
