@@ -1,0 +1,46 @@
+name: Criar PKG do PS3
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Baixar os arquivos do celular
+      uses: actions/checkout@v4
+
+    - name: Instalar ferramentas do PS3
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libssl-dev gcc make git
+        git clone https://github.com
+        cd ps3_tools/make_package_npdrm
+        make
+        sudo cp make_package_npdrm /usr/local/bin/
+
+    - name: Criar arquivo de configuracao do PKG
+      run: |
+        echo "Content-ID = UP0001-MEUMENU01_00-0000111122223333" > package.conf
+        echo "PackageType = Homebrew" >> package.conf
+
+    - name: Compilar tudo em arquivo PKG
+      run: |
+        mkdir -p input
+        if [ -d "C00" ]; then
+          cp -r C00 input/
+        else
+          echo "Erro: Pasta C00 nao encontrada" && exit 1
+        fi
+        make_package_npdrm package.conf input
+        mv *.pkg MeuMenuPS3.pkg
+
+    - name: Disponibilizar o arquivo para download
+      uses: actions/upload-artifact@v4
+      with:
+        name: Pacote-Instalador-PS3
+        path: MeuMenuPS3.pkg
+        
